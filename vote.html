@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>India vs New Zealand Vote</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+body{
+font-family:Arial;
+background:linear-gradient(135deg,#1e3c72,#2a5298);
+color:white;
+text-align:center;
+padding:20px;
+}
+
+.card{
+background:white;
+color:black;
+padding:20px;
+border-radius:15px;
+max-width:400px;
+margin:auto;
+}
+
+input{
+width:90%;
+padding:10px;
+margin:10px;
+border-radius:8px;
+border:1px solid #ccc;
+}
+
+button{
+padding:12px 20px;
+margin:5px;
+border:none;
+border-radius:8px;
+font-size:16px;
+cursor:pointer;
+}
+
+.india{
+background:#138808;
+color:white;
+}
+
+.nz{
+background:black;
+color:white;
+}
+
+.share{
+background:green;
+color:white;
+width:90%;
+}
+
+.result{
+margin-top:15px;
+font-weight:bold;
+}
+</style>
+</head>
+
+<body>
+
+<h2>🏏 Who Will Win?</h2>
+<h3>🇮🇳 India vs 🇳🇿 New Zealand</h3>
+
+<div class="card">
+
+<input id="name" placeholder="Enter your name">
+
+<br>
+
+<button class="india" onclick="vote('India')">
+Vote 🇮🇳 India
+</button>
+
+<button class="nz" onclick="vote('New Zealand')">
+Vote 🇳🇿 New Zealand
+</button>
+
+<div class="result" id="result"></div>
+
+<button class="share" onclick="shareVote()">
+Share on WhatsApp
+</button>
+
+</div>
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+const firebaseConfig = {
+apiKey: "AIzaSyAM5LFszLIG8A25n4xluuBiiVUwCyy6eiY",
+authDomain: "inda-nz-vote.firebaseapp.com",
+databaseURL: "https://inda-nz-vote-default-rtdb.firebaseio.com",
+projectId: "inda-nz-vote",
+storageBucket: "inda-nz-vote.firebasestorage.app",
+messagingSenderId: "777554515841",
+appId: "G-K5NY336YND"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+window.vote = function(team){
+
+let name=document.getElementById("name").value;
+
+if(name==""){
+alert("Enter your name");
+return;
+}
+
+push(ref(db,"votes"),{
+name:name,
+team:team,
+time:new Date().toLocaleString()
+});
+
+alert("Vote Submitted 🎉");
+
+}
+
+const votesRef=ref(db,"votes");
+
+onValue(votesRef,(snapshot)=>{
+
+let india=0;
+let nz=0;
+
+snapshot.forEach(child=>{
+if(child.val().team=="India") india++;
+else nz++;
+});
+
+document.getElementById("result").innerHTML=
+"Live Votes:<br>🇮🇳 India: "+india+"<br>🇳🇿 New Zealand: "+nz;
+
+});
+
+window.shareVote=function(){
+
+let text=document.getElementById("result").innerText;
+
+let url="https://wa.me/?text="+encodeURIComponent(
+"Vote now India vs New Zealand\n"+text
+);
+
+window.open(url);
+
+}
+
+</script>
+
+</body>
+  </html>
